@@ -1,0 +1,82 @@
+#include <stdio.h>
+
+int main() {
+    int pages[50], frames[10];
+    int n, f, i, j, k, flag, faults = 0;
+    int pos = 0, farthest, index;
+
+    // Input: number of pages
+    printf("Enter number of pages: ");
+    scanf("%d", &n);
+
+    // Input: page reference string
+    printf("Enter page reference string:\n");
+    for (i = 0; i < n; i++)
+        scanf("%d", &pages[i]);
+
+    // Input: number of frames
+    printf("Enter number of frames: ");
+    scanf("%d", &f);
+
+    // Initialize frames to empty (-1)
+    for (i = 0; i < f; i++)
+        frames[i] = -1;
+
+    // Process each page
+    for (i = 0; i < n; i++) {
+        flag = 0;
+
+        // Check if page already exists
+        for (j = 0; j < f; j++) {
+            if (frames[j] == pages[i]) {
+                flag = 1;
+                break;
+            }
+        }
+
+        // If page fault occurs
+        if (flag == 0) {
+            if (i < f) {
+                // Fill empty frames first
+                frames[i] = pages[i];
+                faults++;
+            } else {
+                // Optimal page replacement
+                farthest = -1;
+
+                for (j = 0; j < f; j++) {
+                    index = -1;
+
+                    // Find next use of current frame page
+                    for (k = i + 1; k < n; k++) {
+                        if (frames[j] == pages[k]) {
+                            index = k;
+                            break;
+                        }
+                    }
+
+                    // If not used again
+                    if (index == -1) {
+                        pos = j;
+                        break;
+                    }
+
+                    // Find farthest used page
+                    if (index > farthest) {
+                        farthest = index;
+                        pos = j;
+                    }
+                }
+
+                // Replace page
+                frames[pos] = pages[i];
+                faults++;
+            }
+        }
+    }
+
+    // Output result
+    printf("Total Page Faults = %d\n", faults);
+
+    return 0;
+}
